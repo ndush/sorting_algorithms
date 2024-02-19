@@ -11,52 +11,34 @@ void jj(void);
 void insertion_sort_list(listint_t **list)
 {
 	listint_t *current;
-	listint_t *next;
 	listint_t *prev;
-	listint_t *sorted;
+	listint_t *next;
 
 	if (!list || !*list)
 		return;
 
-	sorted = *list;
-	current = sorted->next;
+	current = (*list)->next;
 
 	while (current)
 	{
-		prev = sorted;
+		prev = current->prev;
 		next = current->next;
 
-		/* Move the current node to the beginning of the sorted list */
-		if (current->n < sorted->n)
+		while (prev && prev->n > current->n)
 		{
-			current->prev = NULL;
-			current->next = sorted;
-			sorted->prev = current;
-			*list = current;
-			sorted = current;
-		}
-
-		/* Find the correct position for the current node in the sorted list */
-		while (prev->next && prev->next->n > current->n)
-		{
-			prev = prev->next;
-		}
-
-		/* Swap the current node with the previous node */
-		if (prev != sorted)
-		{
-			prev->next->prev = current;
-			current->next = prev->next;
-			current->prev = prev;
-			prev->next = current;
+			prev->next = current->next;
+			if (current->next)
+				current->next->prev = prev;
+			current->prev = prev->prev;
+			current->next = prev;
 			if (prev->prev)
 				prev->prev->next = current;
 			else
 				*list = current;
-			sorted = current;
+			prev->prev = current;
+			prev = current->prev;
 		}
 
-		/* Move to the next node */
 		current = next;
 	}
 }
