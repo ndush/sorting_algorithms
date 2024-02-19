@@ -41,5 +41,5 @@ void swap(int *a, int *b);
 void insertion_sort_list(listint_t **list);
 void print_list(const listint_t *list);
 listint_t *create_listint(const int *array, size_t size);
-
+void selection_sort(int *array, size_t size);
 #endif /* SORT_H */
