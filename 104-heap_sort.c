@@ -1,67 +1,68 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "sort.h"
 
 /**
- * heapify - Helper function to heapify a subtree rooted with the node i
- * @array: Pointer to the array to be sorted
- * @size: Size of the array
- * @i: Index of the root of the subtree to be heapified
- *
- * Description: This function transforms an array into a max heap
- *              rooted at the given index i.
+ * swap - Swaps two integers
+ * @a: Pointer to the first integer
+ * @b: Pointer to the second integer
  */
-void heapify(int *array, size_t size, size_t i)
+void swap(int *a, int *b)
 {
-	size_t largest = i;
-	size_t left = 2 * i + 1;
-	size_t right = 2 * i + 2;
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+}
 
-	if (left < size && array[left] > array[largest])
-		largest = left;
+/**
+ * sift_down - Performs heapify operation on the array
+ * @array: The array to be sorted
+ * @size: Number of elements in the array
+ * @root: Index of the root of the heap
+ * @end: Index of the end of the heap
+ */
+void sift_down(int *array, size_t size, size_t root, size_t end)
+{
+	size_t max, left, right;
 
-	if (right < size && array[right] > array[largest])
-		largest = right;
-
-	if (largest != i)
+	while ((left = 2 * root + 1) <= end)
 	{
-		int temp = array[i];
-
-		array[i] = array[largest];
-		array[largest] = temp;
-		printf("%d, ", array[i]);
-		printf("%d\n", array[largest]);
-		heapify(array, size, largest);
+		max = left;
+		right = left + 1;
+		if (right <= end && array[right] > array[left])
+			max = right;
+		if (array[root] < array[max])
+		{
+			swap(&array[root], &array[max]);
+			print_array(array, size);
+			root = max;
+		}
+		else
+			break;
 	}
 }
 
 /**
  * heap_sort - Sorts an array of integers in ascending order
- *             using the Heap sort algorithm.
- * @array: Pointer to the array to be sorted
- * @size: Size of the array
+ * using the Heap sort algorithm
+ * @array: The array to be sorted
+ * @size: Number of elements in the array
  *
- * Description: This function sorts an array of integers in ascending order
- *              using the Heap sort algorithm. It first builds a max heap
- *              from the array and then repeatedly extracts the maximum
- *              element from the heap and maintains the heap property.
+ * O(n*log(n)) - Best, Average, and Worst case time complexity
  */
 void heap_sort(int *array, size_t size)
 {
 	size_t i;
 
+	if (array == NULL || size < 2)
+		return;
+
 	for (i = size / 2; i > 0; i--)
-		heapify(array, size, i);
+		sift_down(array, size, i - 1, size - 1);
 
 	for (i = size - 1; i > 0; i--)
 	{
-		int temp = array[0];
-
-		array[0] = array[i];
-		array[i] = temp;
-		printf("%d, ", array[0]);
-		printf("%d\n", array[i]);
-		heapify(array, i, 0);
+		swap(&array[0], &array[i]);
+		print_array(array, size);
+		sift_down(array, size, 0, i - 1);
 	}
 }
 
