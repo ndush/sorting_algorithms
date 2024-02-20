@@ -15,18 +15,16 @@ int hoare_partition(int *array, int low, int high)
 
 	while (1)
 	{
-		do
-		{
+		do {
 			i++;
 		} while (array[i] < pivot);
 
-		do
-		{
+		do {
 			j--;
 		} while (array[j] > pivot);
 
 		if (i >= j)
-			return j;
+			return (j);
 
 		/* Swap array[i] and array[j] */
 		temp = array[i];
@@ -58,7 +56,8 @@ void quicksort_hoare_recursive(int *array, int low, int high, size_t size)
 
 /**
  * quick_sort_hoare - Sorts an array of integers in ascending order
- *                     using the Quick sort algorithm with Hoare partition scheme
+ * using the Quick sort
+ *algorithm with Hoare partition scheme
  * @array: The array to be sorted
  * @size: Number of elements in the array
  */
