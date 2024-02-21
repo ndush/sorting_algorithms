@@ -2,64 +2,53 @@
 #include <stdlib.h>
 #include "sort.h"
 
-/**
- * counting_sort - Sorts an array of integers in ascending order
- * using the Counting sort algorithm.
- * @array: Pointer to the array to be sorted
- * @size: Size of the array
- *
- * Description: This function sorts an array of integers in ascending order
- * using the Counting sort algorithm. It expects the array to
- * contain only non-negative integers.
- */
 void counting_sort(int *array, size_t size) {
-	size_t i;
-	int max = 0;
-	struct node {
-		int n;
-		struct node *next;
-		struct node *prev;
-	} *head, *current;
+    size_t i;
 
-	/* Find the maximum number in the array */
-	for (i = 0; i < size; i++) {
-		if (array[i] > max) {
-			max = array[i];
-		}
-	}
+    int *count; /* Declare count here */
+    int *sorted; /* Declare sorted here */
 
-	/* Allocate memory for the linked list */
-	head = malloc(sizeof(struct node) * (max + 1));
-	if (!head) {
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
+    /* Find the maximum element in the array */
+    size_t max = (size_t) array[0]; /* Cast array[0] to size_t */
+    for (i = 1; i < size; i++) {
+        if ((size_t)array[i] > max) /* Cast array[i] to size_t */
+            max = (size_t) array[i]; /* Cast array[i] to size_t */
+    }
 
-	/* Initialize the linked list */
-	for (i = 0; i <= (size_t)max; i++) {
-		head[i].n = 0;
-		head[i].next = NULL;
-		head[i].prev = NULL;
-	}
+    /* Create and initialize the counting array */
+    count = malloc((max + 1) * sizeof(int)); /* Move declaration here */
+    if (count == NULL)
+        return;
 
-	/* Count the occurrences of each number in the array */
-	for (i = 0; i < size; i++) {
-		head[array[i]].n++;
-	}
+    for (i = 0; i <= max; i++)
+        count[i] = 0;
 
-	/* Sort the array using the counting array */
-	for (i = 0; i < size; i++) {
-		current = &head[i];
-		while (current->n > 0) {
-			array[i] = current->n;
-			current->n--;
-			if (current->next) {
-				current = current->next;
-			}
-		}
-	}
+    /* Count occurrences of each element */
+    for (i = 0; i < size; i++)
+        count[array[i]]++;
 
-	/* Free the memory allocated for the linked list */
-	free(head);
+    /* Update count array to store the actual position of each element */
+    for (i = 1; i <= max; i++)
+        count[i] += count[i - 1];
+
+    /* Build the sorted array */
+    sorted = malloc(size * sizeof(int)); /* Move declaration here */
+    if (sorted == NULL) {
+        free(count);
+        return;
+    }
+
+    for (i = size - 1; i < size; i--) {
+        sorted[count[array[i]] - 1] = array[i];
+        count[array[i]]--;
+    }
+
+    /* Copy the sorted array back to the original array */
+    for (i = 0; i < size; i++)
+        array[i] = sorted[i];
+
+    /* Free allocated memory */
+    free(count);
+    free(sorted);
 }
 
