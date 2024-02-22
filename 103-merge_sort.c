@@ -1,81 +1,91 @@
+#include "sort.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "sort.h"
 
 /**
- * merge_sort - Sorts an array of integers in ascending order
- *              using the Merge sort algorithm.
- * @array: Pointer to the array to be sorted
- * @size: Size of the array
- *
- * Description: This function sorts an array of integers in ascending order
- *              using the Merge sort algorithm. It implements the top-down
- *              merge sort approach where the array is divided into two
- *              sub-arrays, each of which is sorted recursively, and then
- *              merged to produce a single sorted array.
- */
-void m(void);
+ * merge - Merges two subarrays of arr[].
+ * @array: The array to be sorted
+ * @left: Index of the left subarray
+ * @mid: Index of the middle element
+ * @right: Index of the right subarray
+ * @temp: Temporary array to store merged subarrays
+ **/
+void merge(int *array, size_t left, size_t mid, size_t right, int *temp)
+{
+	size_t i = left, j = mid + 1, k = left;
+
+	printf("[left]: ");
+	print_array(array + left, mid - left + 1);
+	printf("[right]: ");
+	print_array(array + mid + 1, right - mid);
+
+	while (i <= mid && j <= right)
+	{
+		if (array[i] <= array[j])
+			temp[k++] = array[i++];
+		else
+			temp[k++] = array[j++];
+	}
+
+	while (i <= mid)
+		temp[k++] = array[i++];
+	while (j <= right)
+		temp[k++] = array[j++];
+
+	for (i = left; i <= right; i++)
+		array[i] = temp[i];
+
+	printf("[Done]: ");
+	print_array(array + left, right - left + 1);
+}
+
+/**
+ * divide - Divides the array recursively.
+ * @array: The array to be sorted
+ * @left: Index of the left subarray
+ * @right: Index of the right subarray
+ * @temp: Temporary array to store merged subarrays
+ **/
+void divide(int *array, size_t left, size_t right, int *temp);
+
+/**
+ * merge_sort - Sorts an array of integers in ascending order using Merge sort.
+ * @array: The array to be sorted
+ * @size: Number of elements in the array
+ **/
 void merge_sort(int *array, size_t size)
 {
-	if (size > 1)
+	int *temp;
+
+	if (size < 2)
+		return;
+
+	temp = malloc(sizeof(int) * size);
+	if (temp == NULL)
+		return;
+
+	divide(array, 0, size - 1, temp);
+
+	free(temp);
+}
+
+/**
+ * divide - Divides the array recursively.
+ * @array: The array to be sorted
+ * @left: Index of the left subarray
+ * @right: Index of the right subarray
+ * @temp: Temporary array to store merged subarrays
+ **/
+void divide(int *array, size_t left, size_t right, int *temp)
+{
+	size_t mid;
+
+	if (left < right)
 	{
-		size_t mid = size / 2;
-		size_t i, j, k;
-		int *left = array;
-		int *right = array + mid;
-		size_t left_size = mid;
-		size_t right_size = size - mid;
-		int *temp = malloc(size * sizeof(int));
-
-		if (temp == NULL)
-		{
-			perror("malloc");
-			exit(EXIT_FAILURE);
-		}
-
-		merge_sort(left, left_size);
-		merge_sort(right, right_size);
-
-		printf("Merging...\n[left]: ");
-		print_array(left, left_size);
-		printf("[right]: ");
-		print_array(right, right_size);
-
-		i = 0;
-		j = 0;
-		k = 0;
-
-		while (i < left_size && j < right_size)
-		{
-			if (left[i] <= right[j])
-			{
-				temp[k++] = left[i++];
-			}
-			else
-			{
-				temp[k++] = right[j++];
-			}
-		}
-
-		while (i < left_size)
-		{
-			temp[k++] = left[i++];
-		}
-
-		while (j < right_size)
-		{
-			temp[k++] = right[j++];
-		}
-
-		for (i = 0; i < size; i++)
-		{
-			array[i] = temp[i];
-		}
-
-		printf("[Done]: ");
-		print_array(array, size);
-
-		free(temp);
+		mid = (left + right) / 2;
+		divide(array, left, mid, temp);
+		divide(array, mid + 1, right, temp);
+		merge(array, left, mid, right, temp);
 	}
 }
 
